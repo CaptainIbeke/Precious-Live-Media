@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Precious Live Media — Service Packages</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #05070b;
+  --surface: #0c0f16;
+  --surface2: #111520;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.13);
+
+  --essential: #7eb8d4;
+  --essential-dim: rgba(126,184,212,0.12);
+  --essential-glow: rgba(126,184,212,0.06);
+
+  --pro: #d4a84c;
+  --pro-dim: rgba(212,168,76,0.12);
+  --pro-glow: rgba(212,168,76,0.07);
+
+  --premium: #c27daf;
+  --premium-dim: rgba(194,125,175,0.12);
+  --premium-glow: rgba(194,125,175,0.06);
+
+  --text: #b8bfcc;
+  --bright: #eef0f5;
+  --muted: #454c5c;
+  --muted2: #6a7080;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* NOISE TEXTURE */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* GRID BACKGROUND */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+
+/* HEADER */
+header {
+  padding: 80px 60px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header-glow {
+  position: absolute;
+  top: -120px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(212,168,76,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.header-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: rise 0.8s ease 0.1s forwards;
+}
+
+.header-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(38px, 6vw, 80px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  color: var(--bright);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: rise 0.8s ease 0.25s forwards;
+}
+
+.header-title em {
+  font-style: italic;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  color: var(--pro);
+  font-size: 1.05em;
+}
+
+.header-sub {
+  font-size: 18px;
+  font-style: italic;
+  color: var(--muted2);
+  max-width: 540px;
+  margin: 0 auto;
+  line-height: 1.6;
+  opacity: 0;
+  animation: rise 0.8s ease 0.4s forwards;
+}
+
+/* TAB TOGGLE */
+.toggle-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 52px 0 0;
+  opacity: 0;
+  animation: rise 0.8s ease 0.55s forwards;
+}
+
+.toggle {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px;
+  gap: 4px;
+}
+
+.toggle-btn {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted2);
+  padding: 10px 24px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.3s;
+}
+
+.toggle-btn.active {
+  background: var(--pro);
+  color: #000;
+  font-weight: 400;
+}
+
+/* PACKAGES GRID */
+.packages {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1300px;
+  margin: 56px auto 0;
+  padding: 0 40px 100px;
+  align-items: start;
+}
+
+/* CARD */
+.pkg {
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(.16,1,.3,1), border-color 0.4s, box-shadow 0.4s;
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.pkg.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.16,1,.3,1), border-color 0.3s, box-shadow 0.3s;
+}
+
+.pkg:hover {
+  transform: translateY(-8px);
+}
+
+.pkg-essential { transition-delay: 0.1s; }
+.pkg-professional { transition-delay: 0.22s; }
+.pkg-premium { transition-delay: 0.34s; }
+
+.pkg-essential:hover { border-color: rgba(126,184,212,0.35); box-shadow: 0 32px 80px rgba(126,184,212,0.07); }
+.pkg-professional:hover { border-color: rgba(212,168,76,0.4); box-shadow: 0 32px 80px rgba(212,168,76,0.1); }
+.pkg-premium:hover { border-color: rgba(194,125,175,0.35); box-shadow: 0 32px 80px rgba(194,125,175,0.07); }
+
+/* POPULAR BADGE */
+.popular-badge {
+  position: absolute;
+  top: 20px; right: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: var(--pro);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-weight: 400;
+}
+
+/* TOP STRIPE */
+.pkg-stripe {
+  height: 3px;
+  width: 100%;
+}
+.pkg-essential .pkg-stripe { background: linear-gradient(90deg, var(--essential), transparent); }
+.pkg-professional .pkg-stripe { background: linear-gradient(90deg, var(--pro), transparent); }
+.pkg-premium .pkg-stripe { background: linear-gradient(90deg, var(--premium), transparent); }
+
+/* CARD HEADER */
+.pkg-head {
+  padding: 32px 32px 0;
+  position: relative;
+}
+
+.pkg-glow {
+  position: absolute;
+  top: -60px; left: -40px;
+  width: 260px; height: 200px;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.pkg-essential .pkg-glow { background: radial-gradient(circle, var(--essential-glow), transparent 70%); }
+.pkg-professional .pkg-glow { background: radial-gradient(circle, var(--pro-glow), transparent 70%); }
+.pkg-premium .pkg-glow { background: radial-gradient(circle, var(--premium-glow), transparent 70%); }
+
+.pkg-tier {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.pkg-essential .pkg-tier { color: var(--essential); }
+.pkg-professional .pkg-tier { color: var(--pro); }
+.pkg-premium .pkg-tier { color: var(--premium); }
+
+.pkg-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--bright);
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.pkg-tagline {
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted2);
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
+
+.pkg-price-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.pkg-currency {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--muted2);
+}
+
+.pkg-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+.pkg-essential .pkg-price { color: var(--essential); }
+.pkg-professional .pkg-price { color: var(--pro); }
+.pkg-premium .pkg-price { color: var(--premium); }
+
+.pkg-price-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+/* CTA BUTTON */
+.pkg-cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 32px;
+  text-align: center;
+  background: transparent;
+}
+
+.pkg-essential .pkg-cta {
+  border-color: var(--essential);
+  color: var(--essential);
+}
+.pkg-essential .pkg-cta:hover {
+  background: var(--essential);
+  color: var(--bg);
+}
+.pkg-professional .pkg-cta {
+  border-color: var(--pro);
+  color: #000;
+  background: var(--pro);
+}
+.pkg-professional .pkg-cta:hover {
+  background: #e8b94e;
+  border-color: #e8b94e;
+}
+.pkg-premium .pkg-cta {
+  border-color: var(--premium);
+  color: var(--premium);
+}
+.pkg-premium .pkg-cta:hover {
+  background: var(--premium);
+  color: var(--bg);
+}
+
+/* DIVIDER */
+.pkg-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 32px;
+}
+
+/* SERVICES LIST */
+.pkg-body {
+  padding: 28px 32px 36px;
+}
+
+.services-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.service-group {
+  margin-bottom: 24px;
+}
+
+.service-group:last-child {
+  margin-bottom: 0;
+}
+
+.group-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.pkg-essential .group-label { background: var(--essential-dim); color: var(--essential); }
+.pkg-professional .group-label { background: var(--pro-dim); color: var(--pro); }
+.pkg-premium .group-label { background: var(--premium-dim); color: var(--premium); }
+
+.service-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text);
+}
+
+.service-item:last-child { margin-bottom: 0; }
+
+.check {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  font-size: 9px;
+}
+.pkg-essential .check { background: var(--essential-dim); color: var(--essential); }
+.pkg-professional .check { background: var(--pro-dim); color: var(--pro); }
+.pkg-premium .check { background: var(--premium-dim); color: var(--premium); }
+
+.service-detail {
+  font-size: 13px;
+  font-style: italic;
+  color: #8a93a8;
+  display: block;
+  margin-top: 2px;
+  line-height: 1.5;
+}
+
+.service-item > div > span:first-child {
+  color: #eef0f5;
+  font-weight: 700;
+  font-size: 15px;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: 0.1px;
+}
+
+/* FOOTER NOTE */
+.pkg-footer {
+  padding: 20px 32px 28px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+/* BOTTOM CALLOUTS */
+.callouts {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 40px 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.callout-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.callout-card .icon {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.callout-card .ctitle {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--bright);
+  margin-bottom: 6px;
+}
+
+.callout-card .cbody {
+  font-size: 14px;
+  color: var(--muted2);
+  line-height: 1.6;
+}
+
+/* SECTION LABEL AT BOTTOM */
+.bottom-note {
+  text-align: center;
+  padding: 0 40px 80px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* COMPARE TABLE (hidden by default) */
+.compare-section {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 40px 100px;
+  display: none;
+}
+
+.compare-section.active { display: block; }
+
+.compare-table-wrap {
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.compare-table thead {
+  background: var(--surface2);
+}
+
+.compare-table th {
+  padding: 18px 20px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.compare-table th:first-child { text-align: left; color: var(--muted); }
+.compare-table th.th-e { color: var(--essential); }
+.compare-table th.th-p { color: var(--pro); }
+.compare-table th.th-pr { color: var(--premium); }
+
+.compare-table tbody tr {
+  border-top: 1px solid var(--border);
+  transition: background 0.2s;
+}
+.compare-table tbody tr:hover { background: var(--surface2); }
+
+.compare-table td {
+  padding: 14px 20px;
+  text-align: center;
+  color: var(--muted2);
+  font-size: 13px;
+}
+
+.compare-table td:first-child {
+  text-align: left;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.compare-table .group-row td {
+  background: rgba(255,255,255,0.02);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 10px 20px;
+}
+
+.yes-e { color: var(--essential); font-size: 16px; }
+.yes-p { color: var(--pro); font-size: 16px; }
+.yes-pr { color: var(--premium); font-size: 16px; }
+.no { color: var(--muted); font-size: 16px; opacity: 0.3; }
+
+/* MOBILISATION GROUP */
+.group-label-mob {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 12px;
+  background: rgba(255,140,60,0.12);
+  color: #ff8c3c;
+  border: 1px solid rgba(255,140,60,0.18);
+}
+
+/* ANIMATIONS */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 1000px) {
+  .packages { grid-template-columns: 1fr; max-width: 520px; }
+  header { padding: 60px 24px 40px; }
+  .packages, .callouts, .compare-section { padding-left: 20px; padding-right: 20px; }
+}
+
+@media (max-width: 600px) {
+  .pkg-head { padding: 24px 22px 0; }
+  .pkg-body { padding: 22px 22px 28px; }
+  .pkg-divider { margin: 0 22px; }
+  .pkg-footer { padding: 18px 22px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-glow"></div>
+  <div class="header-eyebrow">Precious Live Media · Service Packages</div>
+  <h1 class="header-title"><span style="color:#ffffff;">Precious</span> <span style="color:#e02020;">Live</span> <span style="color:#ffffff;">Media</span></h1>
+  <p class="header-sub">Three tiers. Zero ambiguity. Every package is built to deliver broadcast-grade results — from lean single-cam setups to full-scale productions.</p>
+  <p style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted2); margin-top:12px; opacity:0; animation: rise 0.8s ease 0.5s forwards;">Livestream &amp; Corporate Production Packages</p>
+
+  <div class="toggle-wrap">
+    <div class="toggle">
+      <button class="toggle-btn active" id="btnPackages" onclick="showView('packages')">Packages</button>
+      <button class="toggle-btn" id="btnCompare" onclick="showView('compare')">Compare</button>
+    </div>
+  </div>
+</header>
+
+<!-- PACKAGES VIEW -->
+<div id="viewPackages">
+<div class="packages">
+
+  <!-- ESSENTIAL -->
+  <div class="pkg pkg-essential" data-pkg>
+    <div class="pkg-stripe"></div>
+    <div class="pkg-glow"></div>
+    <div class="pkg-head">
+      <div class="pkg-tier">Essential</div>
+      <div class="pkg-name">The Foundation</div>
+      <div class="pkg-tagline">Clean, reliable coverage for intimate events and lean corporate sessions.</div>
+      <div class="pkg-price-wrap">
+        <span class="pkg-currency">₦</span>
+        <span class="pkg-price">350k</span>
+      </div>
+      <div class="pkg-price-note">Per event · Up to 6 hours on-site</div>
+      <button class="pkg-cta">Book This Package</button>
+    </div>
+    <div class="pkg-divider"></div>
+    <div class="pkg-body">
+      <div class="services-label">What's included</div>
+
+      <div class="service-group">
+        <div class="group-label">Production</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Single-Camera Setup & Operation</span><span class="service-detail">1 professional broadcast camera, tripod-mounted and operated by engineer</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Basic Audio Capture</span><span class="service-detail">Up to 2 wired/wireless mics — lapel or handheld for speakers</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Hardware Encoding & Streaming</span><span class="service-detail">Single-platform stream (YouTube, Facebook, or Zoom) at 1080p</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Basic Lower Thirds</span><span class="service-detail">Speaker name & title overlays — standard template design</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label">Delivery</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Full Event Recording (1080p)</span><span class="service-detail">Single-cam master recording delivered within 72 hrs via Google Drive</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Stream Health Monitoring</span><span class="service-detail">Live stream stability managed throughout the event duration</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label">Support</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Pre-Event Tech Check</span><span class="service-detail">30–45 min setup and signal test before event goes live</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>On-Site Engineer (1 person)</span><span class="service-detail">Your dedicated technical operator from setup to breakdown</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label-mob">Mobilisation</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Transport — Equipment & 2 Crew Members</span><span class="service-detail">Return logistics (to and from venue) for all production equipment and 2 crew members included</span></div></div>
+      </div>
+    </div>
+    <div class="pkg-footer">
+      Best for: Small corporate town halls, church services, intimate weddings (under 100 guests), product launches, panel sessions.
+    </div>
+  </div>
+
+  <!-- PROFESSIONAL -->
+  <div class="pkg pkg-professional" data-pkg>
+    <div class="pkg-stripe"></div>
+    <div class="pkg-glow"></div>
+    <div class="popular-badge">Most Popular</div>
+    <div class="pkg-head">
+      <div class="pkg-tier">Professional</div>
+      <div class="pkg-name">The Full Show</div>
+      <div class="pkg-tagline">Multi-camera broadcast quality with professional direction and same-week delivery.</div>
+      <div class="pkg-price-wrap">
+        <span class="pkg-currency">₦</span>
+        <span class="pkg-price">550k</span>
+      </div>
+      <div class="pkg-price-note">Per event · Up to 8 hours on-site</div>
+      <button class="pkg-cta">Book This Package</button>
+    </div>
+    <div class="pkg-divider"></div>
+    <div class="pkg-body">
+      <div class="services-label">What's included</div>
+
+      <div class="service-group">
+        <div class="group-label">Production</div>
+        <div class="service-item"><div class="check">✓</div><div><span>3-Camera Multi-Cam Setup</span><span class="service-detail">Wide, medium, and close-up — switched live for a broadcast-grade visual experience</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Live Video Switching (Hardware or vMix)</span><span class="service-detail">Real-time camera direction with scene transitions and layout switching</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Full Audio Setup — Up to 6 Channels</span><span class="service-detail">Wired + wireless mics, ambient capture, live audio mixing to stream</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Branded Graphic Overlays</span><span class="service-detail">Custom lower thirds, event logo, branded transitions — client assets required 48 hrs before event</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Dual / Triple Platform Streaming</span><span class="service-detail">Simultaneous stream to 2–3 platforms (e.g. YouTube + Facebook + Zoom) — platform count confirmed at booking</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label">Delivery</div>
+        <div class="service-item"><div class="check">✓</div><div><span>2–3 Minute Highlight Reel</span><span class="service-detail">Professionally edited event highlights — shareable for social media and internal comms</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>5 Short-Form Social Clips</span><span class="service-detail">Vertical/square cuts of key moments, ready for Instagram, LinkedIn, and WhatsApp</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Full Event Recording (1080p)</span><span class="service-detail">Single-cam master recording delivered within 72 hrs via Google Drive</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label">Support</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Pre-Event Production Meeting</span><span class="service-detail">45-min virtual or in-person rundown — cues, graphics, script review, Q&A</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>2-Person On-Site Crew</span><span class="service-detail">Lead engineer + camera operator. You focus on hosting — we handle every technical detail.</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>1 Post-Event Revision Round</span><span class="service-detail">One round of edits on delivered recordings within 7 days of delivery</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label-mob">Mobilisation</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Transport — Equipment & 4 Crew Members</span><span class="service-detail">Return logistics (to and from venue) for all production equipment and 4 crew members included</span></div></div>
+      </div>
+    </div>
+    <div class="pkg-footer">
+      Best for: Corporate conferences, product reveals, award ceremonies, mid-scale weddings (100–300 guests), training events, AGMs.
+    </div>
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="pkg pkg-premium" data-pkg>
+    <div class="pkg-stripe"></div>
+    <div class="pkg-glow"></div>
+    <div class="pkg-head">
+      <div class="pkg-tier">Premium</div>
+      <div class="pkg-name">The Full Command</div>
+      <div class="pkg-tagline">Cinematic production value, full creative direction, and a complete content package on delivery.</div>
+      <div class="pkg-price-wrap">
+        <span class="pkg-currency">₦</span>
+        <span class="pkg-price">850k</span>
+      </div>
+      <div class="pkg-price-note">Per event · Up to 10 hours on-site</div>
+      <button class="pkg-cta">Book This Package</button>
+    </div>
+    <div class="pkg-divider"></div>
+    <div class="pkg-body">
+      <div class="services-label">What's included</div>
+
+      <div class="service-group">
+        <div class="group-label">Production</div>
+        <div class="service-item"><div class="check">✓</div><div><span>4–5 Camera Production</span><span class="service-detail">Full camera grid — wide, mid, tight, roving, and cutaway. Full live director coverage.</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Technical Director / Show Caller</span><span class="service-detail">Engineer acts as show director: calling cameras, directing talent cues, managing the entire technical flow</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Professional Audio Production</span><span class="service-detail">Up to 12-channel live audio mix — FOH, IEM monitoring, mix-minus for remote guests</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Full Branded Broadcast Graphics Package</span><span class="service-detail">Opening slate, branded lower thirds, transition bumpers, score bugs, countdown clocks — all custom-built</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Up to 5-Platform Streaming</span><span class="service-detail">Simultaneous live broadcast to up to 5 platforms + Zoom integration for hybrid events with remote speakers/guests</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Live Replay / Instant Replay Capability</span><span class="service-detail">For award moments, performances, or key presentations — replay cuts delivered live in the stream</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label">Delivery</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Cinematic 3–5 Min Highlight Film</span><span class="service-detail">Scored, colour-graded highlight reel crafted for brand use, awards submissions, or social campaigns</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>10 Short-Form Social Clips</span><span class="service-detail">Vertical and square cuts of key moments — speaker quotes, reactions, stage shots, ready-to-post</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Raw Footage Archive (All Cameras)</span><span class="service-detail">Full unedited footage from every camera delivered on a portable drive or via transfer</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label">Support</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Full Pre-Production Planning</span><span class="service-detail">2 planning sessions — run-of-show, script review, graphics brief, tech rider and venue walkthrough</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>3-Person+ On-Site Crew</span><span class="service-detail">Lead engineer, camera operators, audio tech — you run your event; we run the show</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>2 Revision Rounds Included</span><span class="service-detail">Two full rounds of edits on all delivered video content within 14 days</span></div></div>
+        <div class="service-item"><div class="check">✓</div><div><span>Priority 48-Hour Highlight Delivery</span><span class="service-detail">Highlight reel delivered within 48 hours of event — perfect for post-event campaigns</span></div></div>
+      </div>
+
+      <div class="service-group">
+        <div class="group-label-mob">Mobilisation</div>
+        <div class="service-item"><div class="check">✓</div><div><span>Transport — Equipment & 6 Crew Members</span><span class="service-detail">Return logistics (to and from venue) for all production equipment and 6 crew members included</span></div></div>
+      </div>
+    </div>
+    <div class="pkg-footer">
+      Best for: Large conferences (300+ guests), government events, luxury weddings, multi-stage summits, brand activations, hybrid events with remote attendance.
+    </div>
+  </div>
+
+</div><!-- /packages -->
+
+<!-- CALLOUTS -->
+<div class="callouts">
+  <div class="callout-card">
+    <div class="icon">⚡</div>
+    <div class="ctitle">Rush Booking Surcharge</div>
+    <div class="cbody">Bookings confirmed within 72 hours of the event attract a 30% surcharge. Under 24 hours: 50%. Applies to all tiers.</div>
+  </div>
+  <div class="callout-card">
+    <div class="icon">📍</div>
+    <div class="ctitle">Travel & Logistics</div>
+    <div class="cbody">All rates are for events within Port Harcourt. Out-of-town productions are quoted separately — transport, accommodation, and per diem apply.</div>
+  </div>
+  <div class="callout-card">
+    <div class="icon">🔄</div>
+    <div class="ctitle">Retainer Discount</div>
+    <div class="cbody">Regular corporate clients who book monthly get 10% off any package. Lock in a retainer deal for guaranteed priority scheduling and a stable rate.</div>
+  </div>
+  <div class="callout-card">
+    <div class="icon">🕐</div>
+    <div class="ctitle">Extended Hours</div>
+    <div class="cbody">Events running beyond the included hours are billed at ₦25,000/hr (Essential), ₦30,000/hr (Professional), or ₦40,000/hr (Premium).</div>
+  </div>
+</div>
+
+</div><!-- /viewPackages -->
+
+<!-- COMPARE VIEW -->
+<div id="viewCompare" class="compare-section">
+  <div class="compare-table-wrap">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th class="th-e">Essential<br><span style="font-size:14px; letter-spacing:0; text-transform:none; font-family:'Cormorant Garamond',serif; font-style:italic;">₦350,000</span></th>
+          <th class="th-p">Professional<br><span style="font-size:14px; letter-spacing:0; text-transform:none; font-family:'Cormorant Garamond',serif; font-style:italic;">₦550,000</span></th>
+          <th class="th-pr">Premium<br><span style="font-size:14px; letter-spacing:0; text-transform:none; font-family:'Cormorant Garamond',serif; font-style:italic;">₦850,000</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group-row"><td colspan="4">Production</td></tr>
+        <tr><td>Number of Cameras</td><td>1</td><td>3</td><td>4–5</td></tr>
+        <tr><td>Live Video Switching</td><td class="no">—</td><td class="yes-p">✓</td><td class="yes-pr">✓</td></tr>
+        <tr><td>Audio Channels</td><td>Up to 2</td><td>Up to 6</td><td>Up to 12</td></tr>
+        <tr><td>Branded Graphic Overlays</td><td>Basic template</td><td>Custom branded</td><td>Full graphics package</td></tr>
+        <tr><td>Streaming Platforms</td><td>1</td><td>2–3</td><td>Up to 5 + Zoom hybrid</td></tr>
+        <tr><td>Technical Director Role</td><td class="no">—</td><td class="no">—</td><td class="yes-pr">✓</td></tr>
+        <tr><td>Live Replay Capability</td><td class="no">—</td><td class="no">—</td><td class="yes-pr">✓</td></tr>
+
+        <tr class="group-row"><td colspan="4">Delivery</td></tr>
+        <tr><td>Full Event Recording</td><td class="yes-e">✓</td><td class="yes-p">✓</td><td class="no">—</td></tr>
+        <tr><td>Colour Grade</td><td class="no">—</td><td class="no">—</td><td class="no">—</td></tr>
+        <tr><td>Highlight Reel</td><td class="no">—</td><td>2–3 min</td><td>3–5 min cinematic</td></tr>
+        <tr><td>Social Media Clips</td><td class="no">—</td><td>5 clips</td><td>10 clips</td></tr>
+        <tr><td>Raw Footage Archive</td><td class="no">—</td><td class="no">—</td><td class="yes-pr">✓</td></tr>
+        <tr><td>Highlight Delivery Speed</td><td class="no">—</td><td>5 business days</td><td>48 hours priority</td></tr>
+        <tr><td>Revision Rounds</td><td class="no">—</td><td>1 round</td><td>2 rounds</td></tr>
+
+        <tr class="group-row"><td colspan="4">Crew & Support</td></tr>
+        <tr><td>On-Site Hours</td><td>Up to 6 hrs</td><td>Up to 8 hrs</td><td>Up to 10 hrs</td></tr>
+        <tr><td>Crew Size</td><td>1 person</td><td>2 people</td><td>3+ people</td></tr>
+        <tr><td>Pre-Event Tech Check</td><td class="yes-e">✓</td><td class="yes-p">✓</td><td class="yes-pr">✓</td></tr>
+        <tr><td>Pre-Production Meeting</td><td class="no">—</td><td>1 session</td><td>2 sessions + venue walk</td></tr>
+
+        <tr class="group-row"><td colspan="4">Mobilisation</td></tr>
+        <tr><td>Transport (Equipment + Crew)</td><td>2 crew members</td><td>4 crew members</td><td>6 crew members</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="bottom-note">All prices in Nigerian Naira · VAT not included · Rates valid 2025</div>
+
+<script>
+function showView(view) {
+  const pkgView = document.getElementById('viewPackages');
+  const cmpView = document.getElementById('viewCompare');
+  const btnP = document.getElementById('btnPackages');
+  const btnC = document.getElementById('btnCompare');
+
+  if (view === 'packages') {
+    pkgView.style.display = 'block';
+    cmpView.style.display = 'none';
+    btnP.classList.add('active');
+    btnC.classList.remove('active');
+  } else {
+    pkgView.style.display = 'none';
+    cmpView.style.display = 'block';
+    btnC.classList.add('active');
+    btnP.classList.remove('active');
+  }
+}
+
+// Scroll reveal for package cards
+const pkgs = document.querySelectorAll('[data-pkg]');
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+pkgs.forEach(p => revealObserver.observe(p));
+
+// CTA buttons — open WhatsApp with pre-filled package message
+document.querySelectorAll('.pkg-cta').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tier = btn.closest('.pkg').querySelector('.pkg-tier').textContent.trim();
+    const price = btn.closest('.pkg').querySelector('.pkg-price').textContent.trim();
+    const message = encodeURIComponent(`Hello Precious Live Media! I'd like to book the *${tier} Package* (₦${price}). Please let me know the next steps.`);
+    window.open(`https://wa.me/2348105776085?text=${message}`, '_blank');
+  });
+});
+</script>
+</body>
+</html>
